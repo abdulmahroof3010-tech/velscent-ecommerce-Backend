@@ -5,7 +5,7 @@ const connectDB=require("./Config/db")
 const cors=require("cors");
 const app=express();
 const {connectRedis}=require("./Config/redis.js")
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 5000
 
 
 
@@ -29,22 +29,24 @@ app.set("trust proxy", 1);
 const allowedOrigins = [
   "https://velscent.store",
   "https://www.velscent.store",
- 
+  "https://velscent-ecommerce-frontend.vercel.app",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow Postman / curl
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("CORS not allowed: " + origin));
-      }
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow Postman / curl
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("CORS not allowed: " + origin));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
@@ -80,6 +82,7 @@ const startServer = async () => {
   });
 }catch(e){
   console.log("Server start error:",e)
+  process.exit(1);
 }
 };
 
