@@ -22,5 +22,6 @@ jobs:
             cd ~/velscent-ecommerce-Backend
             git pull origin main
             npm ci --omit=dev
+            # This ensures it starts if it's not already running
             pm2 restart backend || pm2 start server.js --name backend
             pm2 save
