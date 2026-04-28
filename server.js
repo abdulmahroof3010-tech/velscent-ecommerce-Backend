@@ -46,7 +46,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
@@ -75,11 +75,13 @@ app.use("/api/admin/offers",adminOfferRoute)
 const startServer = async () => {
   try{
   await connectDB();
-  await connectRedis()
 
   app.listen(PORT, () => {
     console.log("Server Running Sucessfully", PORT);
   });
+
+  // Do not block API startup on Redis availability.
+  connectRedis();
 }catch(e){
   console.log("Server start error:",e)
   process.exit(1);
