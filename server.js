@@ -26,12 +26,22 @@ const adminOfferRoute=require("./Routes/Admin/adminOfferRoute.js")
 
 
 app.set("trust proxy", 1);
+const allowedOrigins = [
+  "https://velscent.store",
+  "https://www.velscent.store",
+ 
+];
+
 app.use(
   cors({
-    origin: [
-      "https://velscent.store",
-      "https://www.velscent.store"
-    ],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow Postman / curl
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("CORS not allowed: " + origin));
+      }
+    },
     credentials: true,
   })
 );
