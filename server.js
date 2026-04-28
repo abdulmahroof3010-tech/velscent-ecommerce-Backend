@@ -25,11 +25,16 @@ const adminOrderRoute=require("./Routes/Admin/adminOrderRoute.js")
 const adminOfferRoute=require("./Routes/Admin/adminOfferRoute.js")
 
 
-
-app.use(cors({
-  origin:"http://localhost:5173", 
-  credentials:true
-}))
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin: [
+      "https://velscent.store",
+      "https://www.velscent.store"
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
