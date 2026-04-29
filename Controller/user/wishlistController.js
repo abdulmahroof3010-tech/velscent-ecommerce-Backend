@@ -1,26 +1,59 @@
 const wishlistModel=require("../../Models/wishlistModel");
+const offerModel=require("../../Models/offerModel");
+const  calculateFinalPrice=require("../../Utils/priceCalculator")
 
+const getWishlistData = async (req, res) => {
+  try {
+    const userId = req.user.userID;
 
-const getWishlistData=async(req,res)=>{
-    try{
-        const userId=req.user.userID;
+    const wishlistData = await wishlistModel
+      .findOne({ user: userId })
+      .populate("items.product")
+      .lean();
 
-        const wishlistData=await wishlistModel.findOne({user:userId}).populate("items.product").lean();
-
-        if(!wishlistData ||wishlistData?.items?.length===0){
-            return res.status(200).json({Message:"wishlist is Empty"});
-        }
-
-        res.status(200).json({WishlistData:wishlistData,Status:"Success"})
-
-    }catch(e){
-
-        res.status(500).json({Message:"Error in getWishListData Function",Error:e.message});
-
+    if (!wishlistData || wishlistData?.items?.length === 0) {
+      return res.status(200).json({ Message: "wishlist is Empty" });
     }
 
-};
+    const offers = await offerModel.find({
+      isActive: true,
+      startDate: { $lte: new Date() },
+      endDate: { $gte: new Date() }
+    }).lean();
 
+   
+    const formattedItems = wishlistData.items.map(item => {
+      const product = item.product;
+
+      const { salePrice, discount, offerName } = calculateFinalPrice(product, offers);
+
+      return {
+        ...item,
+        product: {
+          ...product,
+          salePrice,
+          discount,
+          offerName
+        }
+      };
+    });
+
+    
+    res.status(200).json({
+      WishlistData: {
+        ...wishlistData,
+        items: formattedItems
+      },
+      Status: "Success"
+    });
+
+  } catch (e) {
+    res.status(500).json({
+      Message: "Error in getWishListData Function",
+      Error: e.message
+    });
+  }
+};
 
 const wishlistToggle=async(req,res)=>{
     try{

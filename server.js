@@ -30,11 +30,12 @@ const allowedOrigins = [
   "https://velscent.store",
   "https://www.velscent.store",
   "https://velscent-ecommerce-frontend.vercel.app",
+  
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow Postman / curl
+    if (!origin) return callback(null, true); 
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
@@ -80,7 +81,7 @@ const startServer = async () => {
     console.log("Server Running Sucessfully", PORT);
   });
 
-  // Do not block API startup on Redis availability.
+  
   connectRedis();
 }catch(e){
   console.log("Server start error:",e)

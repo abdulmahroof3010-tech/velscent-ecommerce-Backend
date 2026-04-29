@@ -28,6 +28,7 @@ const getAllProductOrByType=async(req,res)=>{
     }else if(sort ==="high"){
         sortOption.original_price= -1;
     }else if(sort ==="bestseller"){
+        filter.soldCount={$gte:2};
         sortOption.soldCount=-1
     }
 
