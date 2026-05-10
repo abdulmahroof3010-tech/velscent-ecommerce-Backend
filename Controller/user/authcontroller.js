@@ -6,6 +6,8 @@ const { client } = require("../../Config/redis.js");
 
 require("dotenv").config();
 
+
+
 const registerController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -58,8 +60,7 @@ const resendOtpController = async (req, res) => {
 const verifyOtpController = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    console.log("userEmail:", email);
-    console.log("userSendOtp:", otp);
+   
 
     if (!email || !otp) {
       return res.status(400).json({ message: "Email and Otp are required " });

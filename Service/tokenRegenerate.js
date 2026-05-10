@@ -5,7 +5,7 @@ const tokenRegenerator = (req, res) => {
     let token = req.cookies?.Refresh_Token;
 
     if (!token) {
-      return res.status(401).json({ message: "No Refresh_Token Founded" });
+      return res.status(401).json({ message: "No Refresh_Token Founded" })
     }
 
     const decode = jwt.verify(token, process.env.REFRESH_TOKEN_KEY);

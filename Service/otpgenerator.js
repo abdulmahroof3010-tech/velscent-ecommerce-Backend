@@ -2,6 +2,8 @@ const {client}=require("../Config/redis");
 const transporter=require("../Config/nodemailer");
 const generateOtp=require("../Utils/otp");
 require("dotenv").config();
+const ejs=require("ejs");
+const path=require("path")
 
 
 
@@ -11,17 +13,23 @@ const sendOtp=async(email)=>{
         const otp=generateOtp();
         
 
-        await client.set(`otp:${email}`,otp,{EX:40});
+        await client.set(`otp:${email}`,otp,{EX:60});
+
+        const templatePath=path.join(__dirname,"templates","otpTemplate.ejs");
+
+        const html=await ejs.renderFile(templatePath,{otp});
+
 
         
 
          
 
         await transporter.sendMail({
-            from:process.env.EMAIL_NAME,
+            from:` "VELSCENT" <${process.env.EMAIL_NAME}>`,
             to:email,
             subject:"Your OTP Code",
-            text:`Your OTP is ${otp}`
+            html:html
+    
         })
 
         return {success:true};
@@ -38,8 +46,7 @@ const sendOtp=async(email)=>{
 const verifyOTP=async(email,userOtp)=>{
     try{
         const storedOtp= await client.get(`otp:${email}`);
-        console.log("storedOtp",storedOtp);
-        console.log("Usersotp",userOtp)
+       
 
         if(!storedOtp){
             return {success:false}
